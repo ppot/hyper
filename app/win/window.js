@@ -200,8 +200,11 @@ module.exports = class Window extends BrowserWindow {
   }
 
   onTab(opts, recorded) {
-    const size = this.tabs.size;
-    this.tabs.add(new Tab(size + 1, this, tab => {
+    let id;
+    if(recorded) {
+      id = recorded.id;
+    }
+    this.tabs.add(new Tab(id, this, tab => {
       tab.onRoot(opts, recorded);
     }));
   }
