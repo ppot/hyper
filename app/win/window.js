@@ -208,7 +208,7 @@ module.exports = class Window extends BrowserWindow {
 
   restore(tabs) {
     tabs.forEach(tab => {
-      this.rpc.emit('termgroup restore req', {tab});
+      this.rpc.emit('tab restore', {tab});
     });
   }
 
