@@ -1,7 +1,7 @@
 // handle startup squirrel events
 if (process.platform === 'win32') {
   // eslint-disable-next-line import/order
-  const systemContextMenu = require('./system-context-menu');
+  const systemContextMenu = require('./utils/system-context-menu');
 
   switch (process.argv[1]) {
     case '--squirrel-install':
