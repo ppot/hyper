@@ -15,6 +15,7 @@ const createRPC = require('../rpc');
 const notify = require('../notify');
 const fetchNotifications = require('../notifications');
 const Tab = require('./tab');
+const record = require('./record');
 
 module.exports = class Window extends BrowserWindow {
   constructor(opts, cfg, fn) {
@@ -38,9 +39,6 @@ module.exports = class Window extends BrowserWindow {
           'Open a new tab or window to start using the new shell'
         );
       }
-
-      // update background color if necessary
-      this.setBackgroundColor(toElectronBackgroundColor(cfg_.backgroundColor || '#000'));
 
       cfg = cfg_;
     });
@@ -216,6 +214,23 @@ module.exports = class Window extends BrowserWindow {
     tabs.forEach(tab => {
       this.rpc.emit('tab restore', {tab});
     });
+  }
+
+  reopenLastSession() {
+    console.log('reopenLastSession call');
+    const lastSession = record.restore();
+    console.log('lastSession: ', lastSession);
+    if (lastSession) {
+      switch (lastSession.type) {
+        case 'TAB':
+          this.rpc.emit('tab restore', {tab: lastSession});
+          break;
+        case 'PANE':
+          this.rpc.emit('pane restore', {uid: lastSession.parent.uid, pane: lastSession});
+          break;
+        default:
+      }
+    }
   }
 
   record(fn) {
