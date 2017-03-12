@@ -45,6 +45,12 @@ exports.getKeymaps = function () {
   return cfg.keymaps;
 };
 
+exports.extendKeymaps = function (keymaps) {
+  if (keymaps) {
+    cfg.keymaps = keymaps;
+  }
+};
+
 exports.setup = function () {
   cfg = _import();
   _watch();
