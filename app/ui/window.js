@@ -16,11 +16,14 @@ const {execCommand} = require('../commands');
 const {setRendererType, unsetRendererType} = require('../utils/renderer-utils');
 const {decorateSessionOptions, decorateSessionClass} = require('../plugins');
 
+const Tab = require('./component/tab');
+
 module.exports = class Window {
   constructor(options_, cfg, fn) {
     const classOpts = Object.assign({uid: uuid.v4()});
     app.plugins.decorateWindowClass(classOpts);
     this.uid = classOpts.uid;
+    this.tabs = new Map();
 
     app.plugins.onWindowClass(this);
 
@@ -72,6 +75,7 @@ module.exports = class Window {
 
     rpc.on('init', () => {
       window.show();
+      this.onTab(rpc);
       updateBackgroundColor();
 
       // If no callback is passed to createWindow,
@@ -233,7 +237,16 @@ module.exports = class Window {
     rpc.on('close', () => {
       window.close();
     });
+    
+    rpc.on('tab:close', ({uid}) => {
+      this.onTabClose(uid);
+    });
     rpc.on('command', command => {
+      console.log(command);
+      if (command === 'tab:new') {
+        this.onTab(rpc);
+      }
+      
       const focusedWindow = BrowserWindow.getFocusedWindow();
       execCommand(command, focusedWindow);
     });
@@ -322,4 +335,17 @@ module.exports = class Window {
 
     return window;
   }
+  
+  onTab(rpc) {
+    let tab = new Tab(rpc);
+    this.tabs.set(tab.uid, tab);
+  }
+  
+  onTabClose(uid) {
+    console.log(this.tabs.size);
+    // if (this.tabs.size > 1) {
+    //   console.log(this.tabs.keys);
+    // }
+  }
+  
 };
