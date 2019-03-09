@@ -23,7 +23,7 @@ module.exports = class Window {
     const classOpts = Object.assign({uid: uuid.v4()});
     app.plugins.decorateWindowClass(classOpts);
     this.uid = classOpts.uid;
-    this.tabs = new Map();
+    // this.tabs = new Map();
 
     app.plugins.onWindowClass(this);
 
@@ -49,6 +49,7 @@ module.exports = class Window {
 
     const rpc = createRPC(window);
     const sessions = new Map();
+    const tabs = new Map();
 
     const updateBackgroundColor = () => {
       const cfg_ = app.plugins.getDecoratedConfig();
@@ -75,7 +76,8 @@ module.exports = class Window {
 
     rpc.on('init', () => {
       window.show();
-      this.onTab(rpc);
+      window.onTab();
+
       updateBackgroundColor();
 
       // If no callback is passed to createWindow,
@@ -99,7 +101,7 @@ module.exports = class Window {
         console.log('ignoring auto updates during dev');
       }
     });
-
+    
     function createSession(extraOptions = {}) {
       const uid = uuid.v4();
 
@@ -239,12 +241,11 @@ module.exports = class Window {
     });
     
     rpc.on('tab:close', ({uid}) => {
-      this.onTabClose(uid);
+      window.onTabClose(uid);
     });
     rpc.on('command', command => {
-      console.log(command);
       if (command === 'tab:new') {
-        this.onTab(rpc);
+        window.onTab();
       }
       
       const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -332,20 +333,45 @@ module.exports = class Window {
     // Ensure focusTime is set on window open. The focus event doesn't
     // fire from the dock (see bug #583)
     updateFocusTime();
+    
+    window.onTab = () => {
+      const tab = new Tab(rpc);
+      console.log("tab:new : " + tab.uid);
+      tabs.set(tab.uid, tab);
+    }
+    
+    window.onTabClose = (uid) =>  {
+      console.log('tab:close: '+ uid);
+      if (tabs.size > 1) {
+        tabs.delete(uid);
+        console.log(tabs.size);
+        const getLastKeyInMap = map => Array.from(map)[map.size-1][0]
+        const lastItem = getLastKeyInMap(tabs);
+        const tab = tabs.get(lastItem);
+        tab.setActive();
+      }
+    }
 
     return window;
   }
   
-  onTab(rpc) {
-    let tab = new Tab(rpc);
-    this.tabs.set(tab.uid, tab);
-  }
+  // onTab(rpc){
+  //   const tab = new Tab(rpc);
+  //   this.tabs.set(tab.uid, tab);
+  // }
+  // 
+  // onTabClose(uid) {
+  //   console.log(this.tabs.size);
+  //   if (this.tabs.size > 1) {
+  //     this.tabs.delete(uid);
+  //     console.log(this.tabs.size);
+  //     const getLastItemInMap = map => Array.from(map)[map.size-1];
+  //     const lastItem = getLastItemInMap(this.tabs);
+  //     console.log(lastItem);
+  //     let tab = this.tabs.get(lastItem.uid);
+  //   }
+  // }
   
-  onTabClose(uid) {
-    console.log(this.tabs.size);
-    // if (this.tabs.size > 1) {
-    //   console.log(this.tabs.keys);
-    // }
-  }
+
   
 };
