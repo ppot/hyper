@@ -344,7 +344,6 @@ module.exports = class Window {
       console.log('tab:close: '+ uid);
       if (tabs.size > 1) {
         tabs.delete(uid);
-        console.log(tabs.size);
         const getLastKeyInMap = map => Array.from(map)[map.size-1][0]
         const lastItem = getLastKeyInMap(tabs);
         const tab = tabs.get(lastItem);
