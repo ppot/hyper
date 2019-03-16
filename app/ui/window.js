@@ -101,7 +101,7 @@ module.exports = class Window {
         console.log('ignoring auto updates during dev');
       }
     });
-    
+
     function createSession(extraOptions = {}) {
       const uid = uuid.v4();
 
@@ -239,7 +239,7 @@ module.exports = class Window {
     rpc.on('close', () => {
       window.close();
     });
-    
+
     rpc.on('tab:close', ({uid}) => {
       window.onTabClose(uid);
     });
@@ -247,7 +247,7 @@ module.exports = class Window {
       if (command === 'tab:new') {
         window.onTab();
       }
-      
+
       const focusedWindow = BrowserWindow.getFocusedWindow();
       execCommand(command, focusedWindow);
     });
@@ -333,44 +333,24 @@ module.exports = class Window {
     // Ensure focusTime is set on window open. The focus event doesn't
     // fire from the dock (see bug #583)
     updateFocusTime();
-    
+
     window.onTab = () => {
       const tab = new Tab(rpc);
-      console.log("tab:new : " + tab.uid);
+      // console.log("tab:new : " + tab.uid);
       tabs.set(tab.uid, tab);
-    }
-    
-    window.onTabClose = (uid) =>  {
-      console.log('tab:close: '+ uid);
+    };
+
+    window.onTabClose = uid => {
+      // console.log('tab:close: '+ uid);
       if (tabs.size > 1) {
         tabs.delete(uid);
-        const getLastKeyInMap = map => Array.from(map)[map.size-1][0]
+        const getLastKeyInMap = map => Array.from(map)[map.size - 1][0];
         const lastItem = getLastKeyInMap(tabs);
         const tab = tabs.get(lastItem);
         tab.setActive();
       }
-    }
+    };
 
     return window;
   }
-  
-  // onTab(rpc){
-  //   const tab = new Tab(rpc);
-  //   this.tabs.set(tab.uid, tab);
-  // }
-  // 
-  // onTabClose(uid) {
-  //   console.log(this.tabs.size);
-  //   if (this.tabs.size > 1) {
-  //     this.tabs.delete(uid);
-  //     console.log(this.tabs.size);
-  //     const getLastItemInMap = map => Array.from(map)[map.size-1];
-  //     const lastItem = getLastItemInMap(this.tabs);
-  //     console.log(lastItem);
-  //     let tab = this.tabs.get(lastItem.uid);
-  //   }
-  // }
-  
-
-  
 };
