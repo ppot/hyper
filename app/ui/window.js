@@ -336,12 +336,12 @@ module.exports = class Window {
 
     window.onTab = () => {
       const tab = new Tab(rpc);
-      // console.log("tab:new : " + tab.uid);
+      console.log("tab:new : " + tab.uid);
       tabs.set(tab.uid, tab);
     };
 
     window.onTabClose = uid => {
-      // console.log('tab:close: '+ uid);
+      console.log('tab:close: '+ uid);
       if (tabs.size > 1) {
         tabs.delete(uid);
         const getLastKeyInMap = map => Array.from(map)[map.size - 1][0];
