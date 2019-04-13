@@ -23,8 +23,6 @@ module.exports = class Window {
     const classOpts = Object.assign({uid: uuid.v4()});
     app.plugins.decorateWindowClass(classOpts);
     this.uid = classOpts.uid;
-    // this.tabs = new Map();
-
     app.plugins.onWindowClass(this);
 
     const winOpts = Object.assign(

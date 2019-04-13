@@ -22,6 +22,7 @@ const commands = {
     focusedWindow && focusedWindow.rpc.emit('split request horizontal');
   },
   'pane:close': focusedWindow => {
+    focusedWindow && focusedWindow.rpc.emit('term:close');
     focusedWindow && focusedWindow.rpc.emit('termgroup close req');
   },
   'window:preferences': () => {
