@@ -147,6 +147,10 @@ module.exports = class Window {
       const {session, options} = initialSession || createSession(extraOptions);
 
       sessions.set(options.uid, session);
+      rpc.emit('term:request', {
+        uid: options.uid,
+        direcion: options.splitDirection
+      });
       rpc.emit('session add', {
         rows: options.rows,
         cols: options.cols,
